@@ -67,46 +67,23 @@ require 'cek.php';
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid">
-                        <h1 class="mt-4">Stock Barang</h1>
+                        <h1 class="mt-4">Kelola User</h1>
                         
                         <div class="card mb-4">
                             <div class="card-header">
                                  <!-- Button to Open the Modal -->
                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-                                    Tambah Stock
+                                    Tambah User
                                 </button>
-                                <a href="export.php" class="btn btn-info">Export Data Stock</a>
                             </div>
                             <div class="card-body">
-
-
-
-                            <?php
-                                $ambildatastock = mysqli_query($conn,"SELECT * FROM stock WHERE stock <1");
-
-                                while($fetch=mysqli_fetch_array($ambildatastock)){
-                                    $barang = $fetch['namabarang'];
-                                
-                            ?>
-                            <div class="alert alert-danger alert-dismissible">
-                                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                                <strong>Perhatian!</strong> Stock <?=$barang;?> Telah Habis...
-                            </div>
-                            <?php
-                                }
-                            ?>
-
-
-
                                 <div class="table-responsive">
                                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                         <thead>
                                             <tr>
                                                 <th>No</th>
-                                                <th>Foto Barang</th>
-                                                <th>Nama Barang</th>
-                                                <th>Deskripsi</th>
-                                                <th>Stock</th>
+                                                <th>Username</th>
+                                                <th>Role</th>
                                                 <th>Aksi</th>
                                             </tr>
                                         </thead>
@@ -114,68 +91,61 @@ require 'cek.php';
 
                                             <?php
                                             //looping table
-                                            $ambilsemuadatastock = mysqli_query($conn,"select * from stock");
+                                            $loggedId = $_SESSION['user']['iduser'];
+                                            $users = mysqli_query($conn,"SELECT * FROM login WHERE iduser != '$loggedId'");
                                             $i = 1; 
-                                            while($data=mysqli_fetch_array($ambilsemuadatastock)){
-                                                $namabarang = $data['namabarang'];
-                                                $deskripsi = $data['deskripsi'];
-                                                $stock = $data['stock'];
-                                                $idb = $data['idbarang'];
-
-                                                //cek gambar
-                                                $gambar = $data['image']; //ambil gambar
-                                                if($gambar==null){ //ambil gambar
-                                                    $img = 'Tidak Ada Foto';
-                                                } else{
-                                                    $img = '<img src="system/barang/'.$gambar.'" class="zoomable" >';
-                                                }
-
-
+                                            while($data=mysqli_fetch_array($users)){
+                                                $iduser = $data['iduser'];
+                                                $username = $data['username'];
+                                                $password = $data['password'];
+                                                $role = $data['role'];
                                             ?>
 
                                             <tr>
                                                 <td><?=$i++;?></td>
-                                                <td><?=$img;?></td>
-                                                <td><strong><a href="detail.php?id=<?=$idb;?>"><?=$namabarang;?></a></strong></td>
-                                                <td><?=$deskripsi;?></td>
-                                                <td><?=$stock;?></td>
+                                                <td><strong><?=$username;?></strong></td>
+                                                <td><?=$role;?></td>
                                                 <td>
-                                                    <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#edit<?=$idb;?>">
+                                                    <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#edit<?=$iduser;?>">
                                                         Edit
                                                     </button>
-                                                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete<?=$idb;?>">
+                                                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete<?=$iduser;?>">
                                                         Delete
                                                     </button>
                                                 </td>
                                             </tr>
 
                                                 <!-- Button Edit Modal -->
-                                                <div class="modal fade" id="edit<?=$idb;?>">
+                                                <div class="modal fade" id="edit<?=$iduser;?>">
                                                     <div class="modal-dialog">
                                                     <div class="modal-content">
                                                     
                                                         <!-- Modal Header -->
                                                         <div class="modal-header">
-                                                        <h4 class="modal-title">Edit Barang</h4>
+                                                        <h4 class="modal-title">Edit User</h4>
                                                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                                                         </div>
                                                         
                                                         <!-- Modal body -->
                                                         <form method="post" enctype="multipart/form-data">
-                                                        <div class="modal-body">
-                                                        <input type="text" name="namabarang" value="<?=$namabarang;?>" class="form-control" required>
-                                                        <br>
-                                                        <input type="text" name="deskripsi" value="<?=$deskripsi;?>" class="form-control" required>
-                                                        <br>
-                                                        <input type="file" name="file" class="form-control">
-                                                        <br>
-                                                        <input type="hidden" name="idb" value="<?=$idb;?>">
-                                                        </div>
+                                                            <div class="modal-body">
+                                                                <input type="text" name="username" placeholder="Username" class="form-control" required value="<?= $username ?>">
+                                                                <br>
+                                                                <input type="password" name="password" placeholder="Password" class="form-control" required value="<?= $password ?>">
+                                                                <br>
+                                                                <select name="role" id="" class="form-control">
+                                                                    <option selected disabled>Pilih Role User</option>
+                                                                    <option value="admin" <?php if($role == 'admin'): ?> selected <?php endif; ?>>Admin</option>
+                                                                    <option value="user" <?php if($role == 'user'): ?> selected <?php endif; ?>>User</option>
+                                                                </select>
+                                                                <br>
+                                                                <input type="hidden" name="iduser" value="<?=$iduser;?>">
+                                                            </div>
 
 
                                                         <!-- modal footer-->
                                                             <div class="modal-footer">
-                                                                <button type="submit" class="btn btn-primary" name="updatebarang">Save</button>
+                                                                <button type="submit" class="btn btn-primary" name="updateuser">Save</button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -183,7 +153,7 @@ require 'cek.php';
                                                 </div>
 
                                                 <!-- Button Delete Modal -->
-                                                <div class="modal fade" id="delete<?=$idb;?>">
+                                                <div class="modal fade" id="delete<?=$iduser;?>">
                                                     <div class="modal-dialog">
                                                     <div class="modal-content">
                                                     
@@ -196,14 +166,14 @@ require 'cek.php';
                                                         <!-- Modal body -->
                                                         <form method="post">
                                                         <div class="modal-body">
-                                                        Apakah anda yakin ingin menghapus <?=$namabarang;?>?
-                                                        <input type="hidden" name="idb" value="<?=$idb;?>">
+                                                        Apakah anda yakin ingin menghapus <?=$username;?>?
+                                                        <input type="hidden" name="iduser" value="<?=$iduser;?>">
                                                         <br>
                                                         <br>
                                                         </div>
                                                         <!-- modal footer-->
                                                             <div class="modal-footer">
-                                                                <button type="submit" class="btn btn-danger" name="hapusbarang">Hapus</button>
+                                                                <button type="submit" class="btn btn-danger" name="hapususer">Hapus</button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -248,35 +218,34 @@ require 'cek.php';
     </body>
 
 
-        <!-- The Modal -->
-        <div class="modal fade" id="myModal">
+    <!-- The Modal -->
+    <div class="modal fade" id="myModal">
         <div class="modal-dialog">
-        <div class="modal-content">
-        
-            <!-- Modal Header -->
-            <div class="modal-header">
-            <h4 class="modal-title">Tambah Stock</h4>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
+            <div class="modal-content">
             
-            <!-- Modal body -->
-            <form method="post" enctype="multipart/form-data">
-            <div class="modal-body">
-
-            <input type="text" name="namabarang" placeholder="Nama Barang" class="form-control" required>
-            <br>
-            <input type="text" name="deskripsi" placeholder="Deskripsi Barang" class="form-control" required>
-            <br>
-            <input type="number" name="stock" placeholder="Stock" class="form-control" required>
-            <br>
-            <input type="file" name="gambarBarang" class="form-control">
-            <br>
-            <p>*note:<br><strong>Harus memberikan foto barang
-            <br><br>
-            <button type="submit" class="btn btn-primary" name="addnewbarang">Tambah Stock</button>
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Tambah User</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                
+                <!-- Modal body -->
+                <form method="post" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <input type="text" name="username" placeholder="Username" class="form-control" required>
+                        <br>
+                        <input type="password" name="password" placeholder="Password" class="form-control" required>
+                        <br>
+                        <select name="role" id="" class="form-control">
+                            <option selected disabled>Pilih Role User</option>
+                            <option value="admin">Admin</option>
+                            <option value="user">User</option>
+                        </select>
+                        <br>
+                        <button type="submit" class="btn btn-primary" name="addnewuser">Simpan Data</button>
+                    </div>
+                </form>
             </div>
-            </form>
-        </div>
         </div>
     </div>
 </html>

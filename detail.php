@@ -17,12 +17,12 @@ $gambar = $fetch['image']; //ambil gambar
 if($gambar==null){ //ambil gambar
     $img = 'Tidak Ada Foto';
 } else{
-    $img = '<img src="images/'.$gambar.'" class="zoomable" >';
+    $img = '<img src="system/barang/'.$gambar.'" class="zoomable" >';
 }
 
 //generate QR
 $urlview = 'http://localhost/stockbarang/view.php?id='.$idbarang;
-$qrcode = 'https://chart.googleapis.com/chart?chs=350x350&cht=qr&chl='.$urlview.'&choe=UTF-8';
+$qrcode = 'https://quickchart.io/qr?text='.$urlview;
 
 ?>
 <!DOCTYPE html>
@@ -70,6 +70,12 @@ $qrcode = 'https://chart.googleapis.com/chart?chs=350x350&cht=qr&chl='.$urlview.
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Barang Keluar
                             </a>
+                            <?php if($_SESSION['user']['role'] == 'admin') : ?>
+                            <a class="nav-link" href="user.php">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Kelola User
+                            </a>
+                            <?php endif; ?>
                             <a class="nav-link" href="logout.php">
                                 Logout
                             </a>
@@ -86,7 +92,7 @@ $qrcode = 'https://chart.googleapis.com/chart?chs=350x350&cht=qr&chl='.$urlview.
                             <div class="card-header">
                                     <h2><?=$namabarang;?></h2>
                                     <?=$img;?>
-                                    <img src="<?=$qrcode;?>">
+                                    <img src="<?=$qrcode;?>" class="zoomable">
                                 </div>
                             <div class="card-body">
 

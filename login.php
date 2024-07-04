@@ -13,16 +13,18 @@ if(isset($_POST['login'])){
 
     if($hitung>0){
         $_SESSION['log'] = 'True';
+        $_SESSION['user'] = $cekdatabase->fetch_assoc();
+        // var_dump($_SESSION['user']);
         header('location:index.php');
     } else {
+        // return false;
         header('location:login.php');
     };
 };
 
-if(!isset($_SESSION['log'])){
-
-} else {
+if(isset($_SESSION['log'])){
     header('location:index.php');
+
 }
 ?>
 

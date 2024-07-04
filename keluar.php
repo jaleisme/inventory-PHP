@@ -47,6 +47,12 @@ require 'cek.php';
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Barang Keluar
                             </a>
+                            <?php if($_SESSION['user']['role'] == 'admin') : ?>
+                            <a class="nav-link" href="user.php">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Kelola User
+                            </a>
+                            <?php endif; ?>
                             <a class="nav-link" href="logout.php">
                                 Logout
                             </a>

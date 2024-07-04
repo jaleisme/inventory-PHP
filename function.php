@@ -4,6 +4,26 @@ session_start();
 //koneksi ke database
 $conn = mysqli_connect("localhost", "root", "", "stockbarang");
 
+//menambah user baru
+if (isset($_POST['addnewuser'])) {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $role = $_POST['role'];
+
+    //validasi udh ada atau belum
+    $cek = mysqli_query($conn,"SELECT * FROM login WHERE username='$username'");
+    $hitung = mysqli_num_rows($cek);
+
+    if($hitung<1){
+        //jika belum ada
+        $addtotable = mysqli_query($conn, "INSERT INTO login (iduser, username, password, role) VALUES ('', '$username', '$password','$role')");
+
+    } else{
+        //jika sudah ada
+        echo'<script>alert("Username Sudah Terdaftar")</script>';
+    }
+};
+
 //menambah barang baru
 if (isset($_POST['addnewbarang'])) {
     $namabarang = $_POST['namabarang'];
@@ -12,43 +32,30 @@ if (isset($_POST['addnewbarang'])) {
 
     //soalgambar
     $allowed_extension = array('png','jpg','jpeg');
-    $nama = $_FILES['file']['name'];//ngambil nama file gambar
+    $nama = $_FILES['gambarBarang']['name'];//ngambil nama file gambar
     $dot = explode('.',$nama);
     $ekstensi = strtolower(end($dot));//ngambil ekstensinya
-    $ukuran = $_FILES['file']['size'];//ngambil size gambarnya
-    $file_tmp = $_FILES['file']['tmp_name'];//ngambil lokasi gambar
+    $ukuran = $_FILES['gambarBarang']['size'];//ngambil size gambarnya
+    $file_tmp = $_FILES['gambarBarang']['tmp_name'];//ngambil lokasi gambar
 
-    //penamaan file
-    $image = md5(uniqid($nama,true). time()).'.'.$ekstensi; 
+    $dirUpload = "system/barang/";
+    $imageName = md5(uniqid($nama,true). time()).'.'.$ekstensi; 
 
     //validasi udh ada atau belum
     $cek = mysqli_query($conn,"select * from stock where namabarang='$namabarang'");
     $hitung = mysqli_num_rows($cek);
 
     if($hitung<1){
-        //jika belum ada
-
-        //proses upload gambar
-        if(in_array($ekstensi, $allowed_extension) === true){
-            //validasi ukurang file
-            if($ukuran < 15000000){
-                move_uploaded_file($file_tmp, 'images/'.$image);
-
-                $addtotable = mysqli_query($conn, "INSERT INTO stock (namabarang, deskripsi, stock, image) VALUES ('$namabarang', '$deskripsi', '$stock','$image')");
-                if ($addtotable) {
-                    header('location:index.php');
-                } else {
-                    echo 'Gagal';
-                    header('location:index.php');
-                }
+        if(in_array($ekstensi, $allowed_extension)){
+            //proses upload gambar
+            $saveImage = move_uploaded_file($file_tmp, $dirUpload.$imageName);
+            if ($saveImage) {
+                mysqli_query($conn, "INSERT INTO stock (namabarang, deskripsi, stock, image) VALUES ('$namabarang', '$deskripsi', '$stock','$imageName')");
+                // header('location:index.php');
             } else {
-                //kalau file > 1.5mb
-                echo'
-                <script>
-                    allert("Ukuran File Terlalu Besar");
-                    window.location.href="index.php";
-                </script>
-                ';
+                echo 'Gagal';
+                echo `<script>alert($file_tmp)</script>`;
+                // header('location:index.php');
             }
         } else{
             //kalau file non png/jpg
@@ -70,7 +77,6 @@ if (isset($_POST['addnewbarang'])) {
             ';
     }
 };
-
 
 //menambah barang masuk 
 if(isset($_POST['barangmasuk'])){
@@ -128,6 +134,23 @@ if(isset($_POST['addbarangkeluar'])){
     }
 }
 
+//update data user
+if(isset($_POST['updateuser'])){
+    $iduser = $_POST['iduser'];
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $role = $_POST['role'];
+
+    //tidak ingin upload
+    $update = mysqli_query($conn, "UPDATE login SET username='$username', password='$password', role='$role' WHERE iduser='$iduser'");
+    if($update){
+        header('location:user.php');
+    } else {
+        echo 'Gagal';
+        header('location:user.php');
+    }    
+}
+
 //update info barang
 if(isset($_POST['updatebarang'])){
     $idb = $_POST['idb'];
@@ -167,6 +190,18 @@ if(isset($_POST['updatebarang'])){
     }
 
     
+}
+
+//menghapus data user 
+if(isset($_POST['hapususer'])){
+    $iduser = $_POST['iduser'];
+    $hapus = mysqli_query($conn, "DELETE FROM login WHERE iduser='$iduser'");
+    if($hapus){
+        header('location:user.php');
+    } else {
+        echo 'Gagal';
+        header('location:user.php');
+    }
 }
 
 //menghapus barang stock 
