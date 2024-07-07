@@ -128,11 +128,11 @@ require 'cek.php';
                                                     $keterangan = $data['keterangan'];
 
                                                     //cek gambar
-                                                    $gambar = $data['image']; //ambil gambar
+                                                    $gambar = $data['foto']; //ambil gambar
                                                     if($gambar==null){ //ambil gambar
                                                         $img = 'Tidak Ada Foto';
                                                     } else{
-                                                        $img = '<img src="images/'.$gambar.'" class="zoomable" >';
+                                                        $img = '<img src="system/masuk/'.$gambar.'" class="zoomable" >';
                                                     }
                                                     
                                                 ?>
@@ -266,7 +266,7 @@ require 'cek.php';
             </div>
             
             <!-- Modal body -->
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
             <div class="modal-body">
             <select class="js-example-basic-single form-control py-2\4" style="width: 100%;" name="barangnya">
                 <option selected disabled>Pilih barang</option>
@@ -285,6 +285,10 @@ require 'cek.php';
             <br>
             <input type="text" name="penerima" placeholder="Penerima Masuk" class="form-control" required>
             <br>
+            <input type="file" name="foto" class="form-control" required>
+            <br>
+            <p>*note:<br><strong>Harus memberikan foto barang
+            <br><br>
             <button type="submit" class="btn btn-primary" name="barangmasuk">Masukan Barang</button>
             </div>
             </form>

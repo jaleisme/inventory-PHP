@@ -83,20 +83,33 @@ if(isset($_POST['barangmasuk'])){
     $barangnya = $_POST['barangnya'];
     $penerima = $_POST['penerima'];
     $qty = $_POST['qty'];
+    
+    $allowed_extension = array('png','jpg','jpeg');
+    $nama = $_FILES['foto']['name'];//ngambil nama file gambar
+    $dot = explode('.',$nama);
+    $ekstensi = strtolower(end($dot));//ngambil ekstensinya
+    $ukuran = $_FILES['foto']['size'];//ngambil size gambarnya
+    $file_tmp = $_FILES['foto']['tmp_name'];//ngambil lokasi gambar
+
+    $dirUpload = "system/masuk/";
+    $imageName = md5(uniqid($nama,true). time()).'.'.$ekstensi; 
 
     $cekstocksekarang = mysqli_query($conn, "SELECT * FROM stock WHERE idbarang='$barangnya'");
     $ambilbarangnya = mysqli_fetch_array($cekstocksekarang);
 
     $stocksekarang = $ambilbarangnya['stock'];
     $tambahkanstocksekarangdenganquantity = $stocksekarang + $qty;
-
-    $addtomasuk = mysqli_query($conn, "INSERT INTO masuk (idbarang, keterangan, qty) VALUES ('$barangnya', '$penerima', '$qty')");
-    $updatestockmasuk = mysqli_query($conn, "UPDATE stock SET stock='$tambahkanstocksekarangdenganquantity' WHERE idbarang='$barangnya'");    
-    if ($addtomasuk && $updatestockmasuk) {
-        header('location:masuk.php');
-    } else {
-        echo 'Gagal';
-        header('location:masuk.php');
+    
+    $saveImage = move_uploaded_file($file_tmp, $dirUpload.$imageName);
+    if ($saveImage) {
+        $addtomasuk = mysqli_query($conn, "INSERT INTO masuk (idbarang, keterangan, qty, foto) VALUES ('$barangnya', '$penerima', '$qty', '$imageName')");
+        $updatestockmasuk = mysqli_query($conn, "UPDATE stock SET stock='$tambahkanstocksekarangdenganquantity' WHERE idbarang='$barangnya'");    
+        if ($addtomasuk && $updatestockmasuk) {
+            header('location:masuk.php');
+        } else {
+            echo 'Gagal';
+            header('location:masuk.php');
+        }
     }
 }
 
@@ -106,6 +119,16 @@ if(isset($_POST['addbarangkeluar'])){
     $penerima = $_POST['penerima'];
     $qty = $_POST['qty'];
 
+    $allowed_extension = array('png','jpg','jpeg');
+    $nama = $_FILES['foto']['name'];//ngambil nama file gambar
+    $dot = explode('.',$nama);
+    $ekstensi = strtolower(end($dot));//ngambil ekstensinya
+    $ukuran = $_FILES['foto']['size'];//ngambil size gambarnya
+    $file_tmp = $_FILES['foto']['tmp_name'];//ngambil lokasi gambar
+
+    $dirUpload = "system/keluar/";
+    $imageName = md5(uniqid($nama,true). time()).'.'.$ekstensi; 
+
     $cekstocksekarang = mysqli_query($conn, "SELECT * FROM stock WHERE idbarang='$barangnya'");
     $ambilbarangnya = mysqli_fetch_array($cekstocksekarang);
 
@@ -114,15 +137,17 @@ if(isset($_POST['addbarangkeluar'])){
     if($stocksekarang >= $qty){
         //barangnya cukup
         $tambahkanstocksekarangdenganquantity = $stocksekarang - $qty;
-
-        $addtokeluar = mysqli_query($conn, "INSERT INTO keluar (idbarang, penerima, qty) VALUES ('$barangnya', '$penerima', '$qty')");
-        $updatestockmasuk = mysqli_query($conn, "UPDATE stock SET stock='$tambahkanstocksekarangdenganquantity' WHERE idbarang='$barangnya'");    
-        if ($addtokeluar && $updatestockmasuk) {
-            header('location:keluar.php');
-        } else {
-            echo 'Gagal';
-            header('location:keluar.php');
-        } 
+        $saveImage = move_uploaded_file($file_tmp, $dirUpload.$imageName);
+        if ($saveImage) {
+            $addtokeluar = mysqli_query($conn, "INSERT INTO keluar (idbarang, penerima, qty, foto) VALUES ('$barangnya', '$penerima', '$qty', '$imageName')");
+            $updatestockmasuk = mysqli_query($conn, "UPDATE stock SET stock='$tambahkanstocksekarangdenganquantity' WHERE idbarang='$barangnya'"); 
+            if ($addtokeluar && $updatestockmasuk) {
+                header('location:keluar.php');
+            } else {
+                echo 'Gagal';
+                header('location:keluar.php');
+            } 
+        }  
     } else{
         //barang tidak cukup
         echo '

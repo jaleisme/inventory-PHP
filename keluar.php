@@ -11,6 +11,11 @@ require 'cek.php';
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>Barang Keluar</title>
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
+
         <link href="css/styles.css" rel="stylesheet" />
         <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" crossorigin="anonymous"></script>
@@ -124,11 +129,11 @@ require 'cek.php';
                                                         $penerima = $data['penerima'];
                                                        
                                                         //cek gambar
-                                                        $gambar = $data['image']; //ambil gambar
+                                                        $gambar = $data['foto']; //ambil gambar
                                                         if($gambar==null){ //ambil gambar
                                                             $img = 'Tidak Ada Foto';
                                                         } else{
-                                                            $img = '<img src="images/'.$gambar.'" class="zoomable" >';
+                                                            $img = '<img src="system/keluar/'.$gambar.'" class="zoomable" >';
                                                         }
                                                     ?>
                                                     <tr>
@@ -233,7 +238,6 @@ require 'cek.php';
                 </footer>
             </div>
         </div>
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="js/scripts.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
@@ -241,6 +245,13 @@ require 'cek.php';
         <script src="assets/demo/chart-bar-demo.js"></script>
         <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
         <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+        <script src="assets/demo/datatables-demo.js"></script>
+        <script>
+            // In your Javascript (external .js resource or <script> tag)
+            $(document).ready(function() {
+                $('.js-example-basic-single').select2();
+            });        
+        </script>
         <script src="assets/demo/datatables-demo.js"></script>
     </body>
     <!-- The Modal -->
@@ -255,27 +266,29 @@ require 'cek.php';
             </div>
             
             <!-- Modal body -->
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
             <div class="modal-body">
-            <select name="barangnya" class="form-control">
+            <select class="js-example-basic-single form-control py-2\4" style="width: 100%;" name="barangnya">
+                <option selected disabled>Pilih barang</option>
                 <?php
                     $ambilsemuadatanya = mysqli_query($conn,"select * from stock");
-                    while($fetcharray = mysqli_fetch_array($ambilsemuadatanya)){
+                    while($fetcharray = mysqli_fetch_array($ambilsemuadatanya)):
                         $namabarangnya = $fetcharray['namabarang'];
                         $idbarangnya = $fetcharray['idbarang'];
                 ?>
-
                 <option value="<?=$idbarangnya;?>"><?=$namabarangnya;?></option>
-
-                <?php     
-                    }
-                ?>
+                <?php endwhile; ?>
             </select>
+            <br>
             <br>
             <input type="number" name="qty" placeholder="Quantity" class="form-control" required>
             <br>
             <input type="name" name="penerima" placeholder="Penerima Keluar" class="form-control" required>
             <br>
+            <input type="file" name="foto" class="form-control" required>
+            <br>
+            <p>*note:<br><strong>Harus memberikan foto barang
+            <br><br>
             <button type="submit" class="btn btn-primary" name="addbarangkeluar">Submit</button>
             </div>
             </form>
